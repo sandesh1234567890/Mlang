@@ -195,6 +195,12 @@ function transpileToJS(code) {
             return `__STR_${strings.length - 1}__`;
         });
         
+        // Translate Python comment tags (#) to JS comment tags (//)
+        let hashIdx = protectedLine.indexOf('#');
+        if (hashIdx !== -1) {
+            protectedLine = protectedLine.substring(0, hashIdx) + '//' + protectedLine.substring(hashIdx + 1);
+        }
+        
         // Translate vocabulary keywords
         // bol(...) -> await bol(...)
         protectedLine = protectedLine.replace(/\bbol\((.*)\)/g, 'await bol($1)');
@@ -243,11 +249,12 @@ function transpileToJS(code) {
             protectedLine = protectedLine.replace(`__STR_${sIdx}__`, strings[sIdx]);
         }
         
-        // Add semicolon if not a block starter
+        // Add semicolon if not a block starter or comment line
         let isBlockStarter = protectedLine.startsWith('if') || protectedLine === 'else' || 
                              protectedLine.startsWith('while') || protectedLine.startsWith('for') || 
                              protectedLine.startsWith('async function');
-        let endChar = isBlockStarter ? '' : ';';
+        let isCommentLine = protectedLine.startsWith('//');
+        let endChar = (isBlockStarter || isCommentLine) ? '' : ';';
         
         jsLines.push(' '.repeat(indent) + protectedLine + endChar);
     }
@@ -277,7 +284,7 @@ async function runCode() {
     const code = getCodeValue();
     const jsCode = transpileToJS(code);
     
-    // Define interactive prompt variables
+    // Define interactive prompt variables & standard Python helpers
     const bol = async (...args) => {
         appendToTerminal(args.join(' '), 'stdout');
     };
@@ -291,6 +298,11 @@ async function runCode() {
             terminalResolve = resolve;
         });
     };
+    
+    const int = (val) => parseInt(val, 10);
+    const float = (val) => parseFloat(val);
+    const str = (val) => String(val);
+    const len = (val) => val.length;
     
     try {
         // Evaluate the generated async JS code directly in the browser
