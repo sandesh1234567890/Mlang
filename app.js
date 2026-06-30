@@ -323,6 +323,13 @@ terminalInput.addEventListener('keydown', (e) => {
     }
 });
 
+// Click anywhere in terminal body to focus input
+terminalOutput.addEventListener('click', () => {
+    if (!terminalInput.disabled) {
+        terminalInput.focus();
+    }
+});
+
 // File Save & Open functionality
 saveBtn.addEventListener('click', () => {
     const filename = filenameInput.value || 'program.m';
