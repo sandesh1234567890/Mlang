@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLang - Marathi Language IDE</title>
+    <!-- Modern Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar/Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-m">M</span>
+                <span class="logo-text">MLang <span class="subtitle">Marathi IDE</span></span>
+            </div>
+            <div class="header-actions">
+                <button id="story-btn" class="btn btn-secondary story-glow-btn">मदत आणि शिका (Help & Learn)</button>
+                <input type="text" id="filename-input" value="demo.m" placeholder="filename.m">
+                <button id="open-btn" class="btn btn-secondary">उघडा (Open)</button>
+                <button id="save-btn" class="btn btn-secondary">साठवा (Save)</button>
+                <button id="run-btn" class="btn btn-primary">चालवा (Run)</button>
+                <button id="stop-btn" class="btn btn-danger" disabled>थांबवा (Stop)</button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Left Side: Editor -->
+            <section class="editor-pane">
+                <div class="pane-header">संपादक (Code Editor)</div>
+                <div id="editor-container"></div>
+            </section>
+
+            <!-- Right Side: Terminal -->
+            <section class="terminal-pane">
+                <div class="pane-header">
+                    <span>कन्सोल (Terminal)</span>
+                    <button id="clear-btn" class="btn btn-text">Clear</button>
+                </div>
+                <div id="terminal-output" class="terminal-body">
+                    <div class="system-message">Welcome to MLang IDE! Press run to execute your Marathi script.</div>
+                </div>
+                <div class="terminal-input-bar">
+                    <span class="prompt-arrow">&gt;</span>
+                    <input type="text" id="terminal-input" placeholder="Type here and press Enter..." disabled>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for Our Story / Help & Learn -->
+    <div id="story-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header-row">
+                <h2>मदत आणि शिका / Help & Learn</h2>
+                <span class="modal-close" id="modal-close-btn">&times;</span>
+            </div>
+            
+            <!-- Language Tabs (English active by default) -->
+            <div class="story-tabs">
+                <button id="tab-btn-english" class="tab-btn active">English</button>
+                <button id="tab-btn-marathi" class="tab-btn">मराठी (Marathi)</button>
+                <button id="tab-btn-tasks" class="tab-btn">Teach & Learn (शिकवा आणि शिका)</button>
+            </div>
+
+            <div class="story-body">
+                <!-- ENGLISH TECHNICAL BLOG -->
+                <div id="story-content-english" class="story-tab-content active">
+                    <h3 style="font-size: 1.35rem; color: #fff; margin-bottom: 1rem;">Building MLang: How I Built a Marathi Programming Language from Scratch</h3>
+                    <p class="story-lead">
+                        Have you ever found yourself thinking in your mother tongue, coding in English, and wishing those two worlds could collide?
+                    </p>
+                    <p>
+                        It started with a simple chat conversation. I was typing thoughts in Roman Marathi (Marathi words written using the English alphabet)—phrases like <code>"Tujha nav kay?"</code> and <code>"Kai bhava!"</code>. That’s when a spark went off. I was studying Compiler Design this semester. I realized that instead of just studying parsers and lexers in textbooks, I could apply these exact concepts to build something personal: a programming language that understands Roman Marathi.
+                    </p>
+                    <p>
+                        By breaking down language barriers, MLang ensures that <strong>every kid in Maharashtra can learn programming at the exact same pace as other students</strong>, without being held back by English fluency.
+                    </p>
+
+                    <h4 style="color: #fff; margin: 1.25rem 0 0.5rem 0;">The Concept: Translating Thought to Code</h4>
+                    <p>
+                        The core idea was simple. Instead of forcing beginners to learn English keywords like <code>if</code>, <code>else</code>, <code>while</code>, and <code>print</code>, they could write code using words they use every day:
+                    </p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem; list-style-type: square; color: #d1d5db;">
+                        <li><strong><code>if</code></strong> becomes <code>jar</code> (जर)</li>
+                        <li><strong><code>else</code></strong> becomes <code>nahitar</code> (नाहीतर)</li>
+                        <li><strong><code>print</code></strong> becomes <code>bol</code> (बोल)</li>
+                        <li><strong><code>input</code></strong> becomes <code>vichar</code> (विचार)</li>
+                        <li><strong><code>while</code></strong> becomes <code>jovar</code> (जोवर)</li>
+                        <li>The entry point is <code>chalu</code> (चालू) and the end is <code>bass</code> (बस).</li>
+                    </ul>
+
+                    <h4 style="color: #fff; margin: 1.25rem 0 0.5rem 0;">Step-by-Step Implementation</h4>
+                    <p>
+                        Building a language might sound intimidating, but by breaking it down into modular compiler phases, it became a clear, step-by-step engineering project:
+                    </p>
+                    <p>
+                        <strong>Phase 1 & 2: The Core Transpiler</strong><br>
+                        I decided that the fastest way to run MLang was transpiling—translating MLang code into Python. Python has a rich runtime, so mapping my custom keywords directly to Python code allowed me to run files seamlessly. I created:
+                    </p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem; list-style: circle; color: #d1d5db;">
+                        <li><code>mlangc</code> (The Compiler): Translates a <code>.m</code> file into a clean, standalone Python <code>.py</code> file.</li>
+                        <li><code>mlang</code> (The Runner): Executes <code>.m</code> files on the fly.</li>
+                    </ul>
+                    
+                    <p>
+                        <strong>Phase 3: The Lexer</strong><br>
+                        Next, I built a custom Lexer to read source code character-by-character and break it into structural tokens. For example, the statement <code>bol("Hello")</code> is converted into a stream of tokens: <code>BOL</code>, <code>(</code>, <code>STRING</code>, and <code>)</code>.
+                    </p>
+
+                    <p>
+                        <strong>Phase 4: The Parser & Custom Errors</strong><br>
+                        A parser reads the token stream and verifies if the grammar is correct. Since the compiler was designed for beginners, I wanted error messages that felt friendly and familiar.
+                        If someone writes a syntax error, the compiler outputs: <em>Arre! Ithe kahi tari chukla.</em> If they place a token in the wrong place (like <code>jar > 5</code>), the parser catches it and says: <em>He word ithe nako hota / Jar nantar condition pahije.</em>
+                    </p>
+
+                    <p>
+                        <strong>Phase 5 & 6: Building the Web IDE</strong><br>
+                        To make the experience complete, I built a Web IDE from scratch.
+                    </p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem; list-style: circle; color: #d1d5db;">
+                        <li><strong>Frontend:</strong> Built with HTML/CSS and integrated the Monaco Editor (the code editor powering VS Code). I wrote a custom Monarch tokenizer definition to provide real-time syntax highlighting for MLang keywords.</li>
+                        <li><strong>Backend:</strong> Built a lightweight Python web server that executes the compiler, routes prints, and handles interactive terminal inputs (vichar) in real-time over a request-response protocol.</li>
+                    </ul>
+
+                    <h4 style="color: #fff; margin: 1.25rem 0 0.5rem 0;">What I Learned</h4>
+                    <p>
+                        This project was the perfect final-year project because it bridged the gap between theory and practice:
+                    </p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1rem; list-style-type: square; color: #d1d5db;">
+                        <li><strong>Academic Relevance:</strong> I got to implement real-world compiler structures (lexing, AST building, grammar checks) that I learned in my coursework.</li>
+                        <li><strong>User Experience:</strong> Designing error messages in a native language taught me a lot about making programming accessible and less intimidating.</li>
+                        <li><strong>Packaging:</strong> Learning how to bundle the tool so it can be installed globally using a simple <code>pip install .</code> on any PC.</li>
+                    </ul>
+                    <p>
+                        MLang started as a simple experiment in a chat window, and now it's a fully-fledged language ecosystem. It goes to show that the best way to learn complex computer science concepts is simply to build something you care about!
+                    </p>
+                </div>
+
+                <!-- MARATHI EMOTIONAL STORY -->
+                <div id="story-content-marathi" class="story-tab-content">
+                    <p class="story-lead">
+                        जर तुला वाटत असेल की कोडिंग फक्त इंग्रजी माध्यमातील मुलांसाठीच आहे, तर तू चुकीचा आहेस! हा कोडिंगचा नवीन मार्ग खास तुझ्यासाठी आहे.
+                    </p>
+                    
+                    <p>
+                        खूप वेळा महाराष्ट्रातील लहान गावांमध्ये किंवा मराठी शाळेत शिकणाऱ्या मुलांना कोडिंग करायची इच्छा असते, पण <code>if</code>, <code>else</code>, <code>while</code>, <code>print</code> यांसारख्या इंग्रजी शब्दांमुळे ते घाबरतात. 
+                        <strong>"जर मी विचार मराठीत करतो, तर मी कोड इंग्रजीत का लिहू?"</strong> याच कल्पनेतून जन्म झाला <strong>MLang</strong> चा!
+                    </p>
+
+                    <div class="story-highlight-box">
+                        <h3>💡 कोडिंग किती सोपं आहे? बघूया:</h3>
+                        <ul>
+                            <li>प्रोग्राम सुरू करायचा आहे? लिहा: <code>chalu</code></li>
+                            <li>स्क्रीनवर बोलायचं आहे? लिहा: <code>bol("Kai bhava!")</code></li>
+                            <li>काहीतरी विचारायचं आहे? लिहा: <code>vichar("Tujha nav kay?")</code></li>
+                            <li>जर-तर ची अट घालायची आहे? वापरा: <code>jar</code> आणि <code>nahitar</code></li>
+                            <li>प्रोग्राम संपला? लिहा: <code>bass</code></li>
+                        </ul>
+                    </div>
+
+                    <p>
+                        तू महाराष्ट्रातल्या कोणत्याही कोपऱ्यात असो—कोल्हापूर असो, सातारा असो, किंवा कोकण—आता भाषा तुझा अडथळा बनणार नाही. तू जसं मित्रांशी गप्पा मारतोस, तसंच तू आता कॉम्प्युटरशी बोलू शकतोस! 
+                    </p>
+
+                    <h3>🚀 सुरुवात कशी करायची? (Start Faster)</h3>
+                    <p>
+                        संपादकामध्ये (Editor) आधीच एक सोपा प्रोग्राम दिलेला आहे. फक्त वरच्या <strong>"चालवा (Run)"</strong> बटणावर क्लिक कर आणि कन्सोलमध्ये तुझं नाव टाईप कर. तुला कॉम्प्युटर मराठीत उत्तर देईल!
+                    </p>
+
+                    <blockquote class="story-quote">
+                        "इंग्रजी ही फक्त एक भाषा आहे, बुद्धिमत्ता नाही. विचार मराठीत कर, कोड मराठीत लिही, आणि जगाला दाखवून दे की आपणही काही कमी नाही!"
+                    </blockquote>
+                </div>
+
+                <!-- TEACH & LEARN SECTION -->
+                <div id="story-content-tasks" class="story-tab-content">
+                    <h3 style="font-size: 1.35rem; color: #fff; margin-bottom: 1rem;">शिकवा आणि शिका / Teach & Learn Guide</h3>
+                    <p class="story-lead">
+                        Here are tasks and guides to practice compiler concepts and MLang syntax.
+                    </p>
+
+                    <!-- KEYWORD VOCABULARY REFERENCE TABLE -->
+                    <h4 style="color: #fff; margin-bottom: 0.75rem;">📚 शब्दसंग्रह (Keyword Cheat-sheet)</h4>
+                    <table class="story-table">
+                        <thead>
+                            <tr>
+                                <th>MLang (Marathi)</th>
+                                <th>Python (English)</th>
+                                <th>Description / अर्थ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>chalu</code></td><td>(Start Program)</td><td>प्रोग्राम सुरू करतो (Starts code block)</td></tr>
+                            <tr><td><code>bass</code></td><td>(End Block)</td><td>प्रोग्राम किंवा ब्लॉक संपवतो (Closes scope)</td></tr>
+                            <tr><td><code>bol</code></td><td><code>print</code></td><td>माहिती स्क्रीनवर दाखवतो (Outputs variables/strings)</td></tr>
+                            <tr><td><code>vichar</code></td><td><code>input</code></td><td>वापरकर्त्याला प्रश्न विचारतो (Prompts for terminal input)</td></tr>
+                            <tr><td><code>jar</code></td><td><code>if</code></td><td>अट तपासतो (Conditional evaluation)</td></tr>
+                            <tr><td><code>nahitar</code></td><td><code>else</code></td><td>पर्यायी मार्ग निवडतो (Fallback branch)</td></tr>
+                            <tr><td><code>jovar</code></td><td><code>while</code></td><td>लूप चालवतो (While loop block)</td></tr>
+                            <tr><td><code>fir</code></td><td><code>for</code></td><td>क्रमवार लूप फिरवतो (For loop iteration)</td></tr>
+                            <tr><td><code>kaam</code></td><td><code>def</code></td><td>नवीन फंक्शन तयार करतो (Defines a function)</td></tr>
+                            <tr><td><code>paratDe</code></td><td><code>return</code></td><td>किंमत परत देतो (Returns a value from function)</td></tr>
+                            <tr><td><code>ho</code></td><td><code>True</code></td><td>सत्य किंमत (Boolean True)</td></tr>
+                            <tr><td><code>nahi</code></td><td><code>False</code></td><td>असत्य किंमत (Boolean False)</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="story-divider" style="margin: 2rem 0; border-top: 1px solid var(--border-color);"></div>
+
+                    <div class="story-highlight-box" style="background-color: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+                        <h4 style="color: #10b981; margin-bottom: 0.5rem;">🎯 Task 1: Basic Math (साधे गणित)</h4>
+                        <p style="margin-bottom: 0.5rem; color: #fff;">
+                            Write a program that takes two numbers, adds them, and prints the result.
+                        </p>
+                        <pre style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 4px; font-family: var(--font-code); font-size: 0.95rem; color: #a78bfa;">
+chalu
+a = 15
+b = 10
+bol(a + b)
+bass</pre>
+                    </div>
+
+                    <div class="story-highlight-box" style="background-color: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.3);">
+                        <h4 style="color: #a78bfa; margin-bottom: 0.5rem;">🎯 Task 2: Voting Age Check (मतदानाचे वय तपासणे)</h4>
+                        <p style="margin-bottom: 0.5rem; color: #fff;">
+                            Ask the user for their age using <code>vichar</code>, and check if it is greater than or equal to 18.
+                        </p>
+                        <pre style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 4px; font-family: var(--font-code); font-size: 0.95rem; color: #a78bfa;">
+chalu
+vaya = vichar("Tumche vaya kay? ")
+# Translate string input to integer for comparison
+vaya_num = int(vaya)
+
+jar vaya_num >= 18
+    bol("Eligible!")
+nahitar
+    bol("Not Eligible!")
+bass</pre>
+                    </div>
+
+                    <div class="story-highlight-box" style="background-color: rgba(244, 114, 182, 0.08); border-color: rgba(244, 114, 182, 0.3);">
+                        <h4 style="color: #f472b6; margin-bottom: 0.5rem;">🎯 Task 3: Loop Practice (१ ते ५ अंक मोजणे)</h4>
+                        <p style="margin-bottom: 0.5rem; color: #fff;">
+                            Write a loop using <code>jovar</code> (while) to count and print numbers from 1 to 5.
+                        </p>
+                        <pre style="background: rgba(0,0,0,0.3); padding: 0.75rem; border-radius: 4px; font-family: var(--font-code); font-size: 0.95rem; color: #a78bfa;">
+chalu
+i = 1
+jovar i <= 5
+    bol(i)
+    i = i + 1
+bass</pre>
+                    </div>
+
+                    <h4 style="color: #fff; margin-top: 1.5rem; margin-bottom: 0.5rem;">👨‍🏫 Teacher's Guide (शिक्षकांसाठी मार्गदर्शक)</h4>
+                    <p>
+                        Use MLang to teach core computer science principles step-by-step:
+                    </p>
+                    <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: #d1d5db; list-style-type: square;">
+                        <li><strong>Lexing:</strong> Show how the lexer divides Marathi words like <code>jar</code> into language tokens.</li>
+                        <li><strong>Parsing:</strong> Demonstrate how parser rules detect syntax errors (e.g. typing <code>jar > 5</code> triggers a custom Marathi error message).</li>
+                        <li><strong>Translation:</strong> Explain how MLang converts Marathi scripts to Python code before execution.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Input Helper for Open -->
+    <input type="file" id="file-picker" accept=".m" style="display: none;">
+
+    <script src="app.js"></script>
+</body>
+</html>
