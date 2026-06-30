@@ -300,6 +300,22 @@ body {
     background-color: rgba(11, 15, 25, 0.5);
 }
 
+/* Mobile-friendly Textarea Editor (hidden by default on desktop) */
+.mobile-textarea-editor {
+    display: none;
+    flex: 1;
+    background-color: #0f172a;
+    color: #f3f4f6;
+    border: none;
+    outline: none;
+    font-family: var(--font-code);
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 1.25rem;
+    resize: none;
+    tab-size: 4;
+}
+
 /* Terminal Styles */
 .terminal-pane {
     background-color: rgba(5, 7, 12, 0.95);
@@ -639,6 +655,15 @@ body {
         flex: none;
     }
     
+    /* Swap Monaco Editor for Mobile-friendly native Textarea */
+    #editor-container {
+        display: none !important;
+    }
+
+    .mobile-textarea-editor {
+        display: block !important;
+    }
+
     /* Make Modal Paddings and Layout compact */
     .modal-header-row {
         padding: 1rem 1.5rem 0.5rem 1.5rem;
@@ -677,11 +702,29 @@ body {
     
     .menu-toggle-btn {
         display: block; /* Show hamburger button */
+        min-height: 48px;
+        min-width: 48px;
     }
     
     /* adjust dropdown position */
     .mobile-dropdown {
         top: 65px;
+    }
+    
+    /* Increase Touch target sizes for links and inputs */
+    .btn {
+        min-height: 48px;
+        font-size: 0.95rem;
+    }
+
+    .dropdown-item {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+    }
+
+    .terminal-input-bar {
+        padding: 0.95rem 1.5rem;
     }
 }
 

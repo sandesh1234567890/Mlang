@@ -1,5 +1,9 @@
 // Monaco Editor Integration & Custom MLang Language Definition
 let editor;
+const mobileTextarea = document.getElementById('editor-textarea');
+
+// Synchronize default code template to mobile editor initially
+mobileTextarea.value = `chalu\nnav = vichar("Tujha nav kay? ")\n\njar nav == "Sandesh"\n    bol("Kai bhava!")\nnahitar\n    bol("Swagat ahe!")\nbass`;
 
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' } });
 
@@ -67,7 +71,7 @@ require(['vs/editor/editor.main'], function () {
 
     // 4. Create Editor Instance
     editor = monaco.editor.create(document.getElementById('editor-container'), {
-        value: `chalu\nnav = vichar("Tujha nav kay? ")\n\njar nav == "Sandesh"\n    bol("Kai bhava!")\nnahitar\n    bol("Swagat ahe!")\nbass`,
+        value: mobileTextarea.value,
         language: 'mlang',
         theme: 'mlangDarkTheme',
         fontSize: 14,
@@ -76,7 +80,34 @@ require(['vs/editor/editor.main'], function () {
         minimap: { enabled: false },
         lineNumbersMinChars: 3
     });
+
+    // Synchronize changes from Monaco to mobile textarea (just in case screen rotates/resizes)
+    editor.onDidChangeModelContent(() => {
+        mobileTextarea.value = editor.getValue();
+    });
 });
+
+// Sync changes from mobile textarea to Monaco
+mobileTextarea.addEventListener('input', () => {
+    if (editor) {
+        editor.setValue(mobileTextarea.value);
+    }
+});
+
+// Helper functions to get and set code regardless of screen size
+function getCodeValue() {
+    if (window.innerWidth <= 768) {
+        return mobileTextarea.value;
+    }
+    return editor ? editor.getValue() : mobileTextarea.value;
+}
+
+function setCodeValue(val) {
+    mobileTextarea.value = val;
+    if (editor) {
+        editor.setValue(val);
+    }
+}
 
 // IDE Controls & Interactive Client-Side Transpilation
 const terminalOutput = document.getElementById('terminal-output');
@@ -243,7 +274,7 @@ async function runCode() {
     terminalOutput.innerHTML = '';
     appendToTerminal("--- Execution Started (Browser Static) ---", "system");
     
-    const code = editor.getValue();
+    const code = getCodeValue();
     const jsCode = transpileToJS(code);
     
     // Define interactive prompt variables
@@ -333,7 +364,7 @@ terminalOutput.addEventListener('click', () => {
 // File Save & Open functionality
 saveBtn.addEventListener('click', () => {
     const filename = filenameInput.value || 'program.m';
-    const blob = new Blob([editor.getValue()], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([getCodeValue()], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = filename;
@@ -351,7 +382,7 @@ filePicker.addEventListener('change', (e) => {
     filenameInput.value = file.name;
     const reader = new FileReader();
     reader.onload = function(evt) {
-        editor.setValue(evt.target.result);
+        setCodeValue(evt.target.result);
     };
     reader.readAsText(file);
 });
@@ -439,7 +470,7 @@ filenameInput.addEventListener('input', () => {
 
 dropdownSaveBtn.addEventListener('click', () => {
     const filename = filenameInputMobile.value || 'program.m';
-    const blob = new Blob([editor.getValue()], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([getCodeValue()], { type: 'text/plain;charset=utf-8' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = filename;
