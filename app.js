@@ -67,22 +67,42 @@ require(['vs/editor/editor.main'], function () {
         }
     });
 
-    // 4. Create Editor Instance
+    // 4. Create Editor Instance with extreme Mobile optimizations
     const isMobile = window.innerWidth <= 768;
     editor = monaco.editor.create(document.getElementById('editor-container'), {
         value: defaultCodeValue,
         language: 'mlang',
         theme: 'mlangDarkTheme',
-        fontSize: 14,
+        fontSize: isMobile ? 13 : 14,
         fontFamily: "'JetBrains Mono', monospace",
-        automaticLayout: true,
+        automaticLayout: !isMobile, // Disable CPU-intensive polling layout changes on mobile
         minimap: { enabled: false },
         lineNumbersMinChars: 3,
         // Mobile keyboard friendly overrides:
         accessibilitySupport: isMobile ? 'off' : 'on',
         quickSuggestions: !isMobile,
-        wordWrap: 'on'
+        wordWrap: 'on',
+        // Performance tweaks: disable heavy features on mobile touch keyboards
+        folding: !isMobile,
+        hover: { enabled: !isMobile },
+        parameterHints: { enabled: !isMobile },
+        renderLineHighlight: isMobile ? 'none' : 'all',
+        occurrencesHighlight: !isMobile,
+        selectionHighlight: !isMobile,
+        links: !isMobile,
+        dragAndDrop: !isMobile,
+        lightbulb: { enabled: false },
+        formatOnType: false
     });
+
+    // Manually trigger layout recalculation on window resize for mobile (replaces automaticLayout polling)
+    if (isMobile) {
+        window.addEventListener('resize', () => {
+            if (editor) {
+                editor.layout();
+            }
+        });
+    }
 
     // 5. Register Autocomplete Suggestions
     monaco.languages.registerCompletionItemProvider('mlang', {
