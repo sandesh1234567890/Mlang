@@ -545,3 +545,84 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
 }
+
+/* Mobile Responsive Styling */
+@media (max-width: 768px) {
+    /* Stack Editor and Terminal vertically */
+    .workspace {
+        flex-direction: column;
+        height: calc(100vh - 120px);
+    }
+    
+    .editor-pane {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        height: 55%;
+        flex: none;
+    }
+    
+    .terminal-pane {
+        height: 45%;
+        flex: none;
+    }
+    
+    /* Make Modal Paddings and Layout compact */
+    .modal-header-row {
+        padding: 1rem 1.5rem 0.5rem 1.5rem;
+    }
+    
+    .story-tabs {
+        padding: 0 1.5rem;
+        gap: 0.75rem;
+    }
+    
+    .story-body {
+        padding: 1.5rem;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    
+    .story-lead {
+        font-size: 1.15rem;
+        margin-bottom: 1.25rem;
+    }
+    
+    .story-highlight-box {
+        padding: 1rem 1.25rem;
+        margin: 1.25rem 0;
+    }
+    
+    .story-table th, .story-table td {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Responsive Header Actions wrapper */
+    .app-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+    
+    .header-actions .btn {
+        flex: 1;
+        min-width: 80px;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.75rem;
+    }
+    
+    #filename-input {
+        width: 100%;
+        text-align: center;
+        order: -1; /* Place filename input first in mobile wrap */
+    }
+}
