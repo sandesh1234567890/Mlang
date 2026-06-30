@@ -19,14 +19,29 @@
                 <span class="logo-text">MLang <span class="subtitle">Marathi IDE</span></span>
             </div>
             <div class="header-actions">
-                <button id="story-btn" class="btn btn-secondary story-glow-btn">मदत आणि शिका (Help & Learn)</button>
-                <input type="text" id="filename-input" value="demo.m" placeholder="filename.m">
-                <button id="open-btn" class="btn btn-secondary">उघडा (Open)</button>
-                <button id="save-btn" class="btn btn-secondary">साठवा (Save)</button>
+                <!-- Hamburger Menu Button for Mobile -->
+                <button id="menu-btn" class="btn btn-secondary menu-toggle-btn" aria-label="Toggle Menu">&#9776;</button>
+
+                <!-- Desktop Actions -->
+                <button id="story-btn" class="btn btn-secondary story-glow-btn desktop-only">मदत आणि शिका (Help & Learn)</button>
+                <input type="text" id="filename-input" class="desktop-only" value="demo.m" placeholder="filename.m">
+                <button id="open-btn" class="btn btn-secondary desktop-only">उघडा (Open)</button>
+                <button id="save-btn" class="btn btn-secondary desktop-only">साठवा (Save)</button>
                 <button id="run-btn" class="btn btn-primary">चालवा (Run)</button>
                 <button id="stop-btn" class="btn btn-danger" disabled>थांबवा (Stop)</button>
             </div>
         </header>
+
+        <!-- Dropdown Menu for Mobile Actions -->
+        <div id="mobile-dropdown" class="mobile-dropdown">
+            <button id="dropdown-story-btn" class="dropdown-item">मदत आणि शिका (Help & Learn)</button>
+            <button id="dropdown-open-btn" class="dropdown-item">उघडा (Open File)</button>
+            <button id="dropdown-save-btn" class="dropdown-item">साठवा (Save File)</button>
+            <div class="dropdown-input-wrapper">
+                <label for="filename-input-mobile">File Name:</label>
+                <input type="text" id="filename-input-mobile" value="demo.m">
+            </div>
+        </div>
 
         <!-- Main Workspace -->
         <main class="workspace">
@@ -53,7 +68,7 @@
         </main>
     </div>
 
-    <!-- Modal for Our Story / Help & Learn -->
+    <!-- Modal for Our Story -->
     <div id="story-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header-row">

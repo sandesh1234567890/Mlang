@@ -391,3 +391,51 @@ tabBtnTasks.addEventListener('click', () => {
     storyContentMarathi.classList.remove('active');
     storyContentEnglish.classList.remove('active');
 });
+
+// Mobile Dropdown Navigation Triggers
+const menuBtn = document.getElementById('menu-btn');
+const mobileDropdown = document.getElementById('mobile-dropdown');
+const dropdownStoryBtn = document.getElementById('dropdown-story-btn');
+const dropdownOpenBtn = document.getElementById('dropdown-open-btn');
+const dropdownSaveBtn = document.getElementById('dropdown-save-btn');
+const filenameInputMobile = document.getElementById('filename-input-mobile');
+
+menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    mobileDropdown.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    mobileDropdown.classList.remove('active');
+});
+
+mobileDropdown.addEventListener('click', (e) => {
+    e.stopPropagation();
+});
+
+dropdownStoryBtn.addEventListener('click', () => {
+    storyModal.classList.add('active');
+    mobileDropdown.classList.remove('active');
+});
+
+dropdownOpenBtn.addEventListener('click', () => {
+    filePicker.click();
+    mobileDropdown.classList.remove('active');
+});
+
+filenameInputMobile.addEventListener('input', () => {
+    filenameInput.value = filenameInputMobile.value;
+});
+filenameInput.addEventListener('input', () => {
+    filenameInputMobile.value = filenameInput.value;
+});
+
+dropdownSaveBtn.addEventListener('click', () => {
+    const filename = filenameInputMobile.value || 'program.m';
+    const blob = new Blob([editor.getValue()], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    mobileDropdown.classList.remove('active');
+});
