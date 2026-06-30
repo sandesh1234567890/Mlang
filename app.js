@@ -81,6 +81,77 @@ require(['vs/editor/editor.main'], function () {
         lineNumbersMinChars: 3
     });
 
+    // 5. Register Autocomplete Suggestions
+    monaco.languages.registerCompletionItemProvider('mlang', {
+        provideCompletionItems: function (model, position) {
+            const suggestions = [
+                {
+                    label: 'chalu',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'chalu',
+                    documentation: 'प्रोग्राम सुरू करतो (Starts code block)'
+                },
+                {
+                    label: 'bass',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'bass',
+                    documentation: 'प्रोग्राम किंवा ब्लॉक संपवतो (Closes scope)'
+                },
+                {
+                    label: 'bol',
+                    kind: monaco.languages.CompletionItemKind.Function,
+                    insertText: 'bol("${1:text}")',
+                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                    documentation: 'माहिती स्क्रीनवर दाखवतो (Outputs variables/strings)'
+                },
+                {
+                    label: 'vichar',
+                    kind: monaco.languages.CompletionItemKind.Function,
+                    insertText: 'vichar("${1:prompt}")',
+                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                    documentation: 'वापरकर्त्याला प्रश्न विचारतो (Prompts for terminal input)'
+                },
+                {
+                    label: 'jar',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'jar ',
+                    documentation: 'अट तपासतो (Conditional evaluation)'
+                },
+                {
+                    label: 'nahitar',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'nahitar',
+                    documentation: 'पर्यायी मार्ग निवडतो (Fallback branch)'
+                },
+                {
+                    label: 'jovar',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'jovar ',
+                    documentation: 'लूप चालवतो (While loop block)'
+                },
+                {
+                    label: 'fir',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'fir ',
+                    documentation: 'क्रमवार लूप फिरवतो (For loop iteration)'
+                },
+                {
+                    label: 'kaam',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'kaam ',
+                    documentation: 'नवीन फंक्शन तयार करतो (Defines a function)'
+                },
+                {
+                    label: 'paratDe',
+                    kind: monaco.languages.CompletionItemKind.Keyword,
+                    insertText: 'paratDe ',
+                    documentation: 'किंमत परत देतो (Returns a value from function)'
+                }
+            ];
+            return { suggestions: suggestions };
+        }
+    });
+
     // Synchronize changes from Monaco to mobile textarea (just in case screen rotates/resizes)
     editor.onDidChangeModelContent(() => {
         mobileTextarea.value = editor.getValue();
