@@ -6,8 +6,18 @@
     <title>MLang - Marathi Language IDE</title>
     <!-- Modern Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- CodeMirror 5 Stylesheets (for Mobile viewports) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material-darker.min.css">
+    
     <link rel="stylesheet" href="styles.css">
-    <!-- Monaco Editor Loader -->
+
+    <!-- CodeMirror 5 Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/simple.min.js"></script>
+
+    <!-- Monaco Editor Loader (for Desktop viewports) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs/loader.min.js"></script>
 </head>
 <body>
@@ -48,8 +58,10 @@
             <!-- Left Side: Editor -->
             <section class="editor-pane">
                 <div class="pane-header">संपादक (Code Editor)</div>
-                <!-- Single Monaco Editor container (supporting mobile friendly options) -->
+                <!-- Monaco Container (for desktop) -->
                 <div id="editor-container"></div>
+                <!-- Textarea for CodeMirror 5 (for mobile typing smoothness) -->
+                <textarea id="editor-textarea" style="display: none;"></textarea>
             </section>
 
             <!-- Right Side: Terminal -->

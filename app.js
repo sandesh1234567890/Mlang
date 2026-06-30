@@ -1,189 +1,190 @@
-// Monaco Editor Integration & Custom MLang Language Definition
+// Monaco Editor & CodeMirror 5 Integration for Hybrid Viewport Performance
 let editor;
+let codeMirrorInstance = null;
+
 // Default template code
 const defaultCodeValue = `chalu\nnav = vichar("Tujha nav kay? ")\n\njar nav == "Sandesh"\n    bol("Kai bhava!")\nnahitar\n    bol("Swagat ahe!")\nbass`;
 
-require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' } });
+const isMobile = window.innerWidth <= 768;
 
-require(['vs/editor/editor.main'], function () {
-    // 1. Register Custom MLang Language
-    monaco.languages.register({ id: 'mlang' });
-
-    // 2. Define Language Tokens (Syntax Highlighting)
-    monaco.languages.setMonarchTokensProvider('mlang', {
-        keywords: [
-            'chalu', 'bass', 'jar', 'nahitar', 'jovar', 'fir', 'kaam', 'paratDe', 'ho', 'nahi'
-        ],
-        builtins: [
-            'bol', 'vichar'
-        ],
-        operators: [
-            '=', '==', '>', '<', '>=', '<=', '!=', '+', '-', '*', '/'
-        ],
-        symbols: /[=><!~?:&|+\-*\/\^%]+/,
-        tokenizer: {
-            root: [
-                // Identifiers & Keywords
-                [/[a-zA-Z_]\w*/, {
-                    cases: {
-                        '@keywords': 'keyword',
-                        '@builtins': 'predefined',
-                        '@default': 'identifier'
-                    }
-                }],
-                // Numbers
-                [/\d+/, 'number'],
-                // String literals
-                [/"([^"\\]|\\.)*"/, 'string'],
-                [/'([^'\\]|\\.)*'/, 'string'],
-                // Operators
-                [/@symbols/, {
-                    cases: {
-                        '@operators': 'operator',
-                        '@default': ''
-                    }
-                }],
-                // Comments
-                [/#.*$/, 'comment'],
-            ]
-        }
+if (isMobile) {
+    // 1. Define Custom MLang Highlight Mode in CodeMirror
+    CodeMirror.defineSimpleMode("mlang", {
+        start: [
+            {regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: "string"},
+            {regex: /'(?:[^\\]|\\.)*?(?:'|$)/, token: "string"},
+            {regex: /(?:chalu|bass|jar|nahitar|jovar|fir|kaam|paratDe|ho|nahi)\b/, token: "keyword"},
+            {regex: /(?:bol|vichar)\b/, token: "builtin"},
+            {regex: /0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i, token: "number"},
+            {regex: /#.*/, token: "comment"},
+            {regex: /[-+\/*=<>!]+/, token: "operator"}
+        ]
     });
 
-    // 3. Define Theme & Editor Configurations
-    monaco.editor.defineTheme('mlangDarkTheme', {
-        base: 'vs-dark',
-        inherit: true,
-        rules: [
-            { token: 'keyword', foreground: 'c084fc', fontStyle: 'bold' },
-            { token: 'predefined', foreground: '60a5fa', fontStyle: 'italic' },
-            { token: 'string', foreground: '34d399' },
-            { token: 'number', foreground: 'fb7185' },
-            { token: 'comment', foreground: '6b7280' },
-            { token: 'operator', foreground: 'f472b6' }
-        ],
-        colors: {
-            'editor.background': '#0f172a',
-            'editor.lineHighlightBackground': '#1e293b',
-        }
+    // 2. Initialize Lightweight CodeMirror Editor on Mobile
+    codeMirrorInstance = CodeMirror.fromTextArea(document.getElementById('editor-textarea'), {
+        lineNumbers: true,
+        mode: "mlang",
+        theme: "material-darker",
+        lineWrapping: true,
+        tabSize: 4
     });
+    codeMirrorInstance.setValue(defaultCodeValue);
+} else {
+    // Initialize Monaco on Desktop
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' } });
 
-    // 4. Create Editor Instance with extreme Mobile optimizations
-    const isMobile = window.innerWidth <= 768;
-    editor = monaco.editor.create(document.getElementById('editor-container'), {
-        value: defaultCodeValue,
-        language: 'mlang',
-        theme: 'mlangDarkTheme',
-        fontSize: isMobile ? 13 : 14,
-        fontFamily: "'JetBrains Mono', monospace",
-        automaticLayout: !isMobile, // Disable CPU-intensive polling layout changes on mobile
-        minimap: { enabled: false },
-        lineNumbersMinChars: 3,
-        // Mobile keyboard friendly overrides:
-        accessibilitySupport: isMobile ? 'off' : 'on',
-        quickSuggestions: !isMobile,
-        wordWrap: 'on',
-        // Performance tweaks: disable heavy features on mobile touch keyboards
-        folding: !isMobile,
-        hover: { enabled: !isMobile },
-        parameterHints: { enabled: !isMobile },
-        renderLineHighlight: isMobile ? 'none' : 'all',
-        occurrencesHighlight: !isMobile,
-        selectionHighlight: !isMobile,
-        links: !isMobile,
-        dragAndDrop: !isMobile,
-        lightbulb: { enabled: false },
-        formatOnType: false
-    });
+    require(['vs/editor/editor.main'], function () {
+        // Register Custom MLang Language in Monaco
+        monaco.languages.register({ id: 'mlang' });
 
-    // Manually trigger layout recalculation on window resize for mobile (replaces automaticLayout polling)
-    if (isMobile) {
-        window.addEventListener('resize', () => {
-            if (editor) {
-                editor.layout();
+        monaco.languages.setMonarchTokensProvider('mlang', {
+            keywords: [
+                'chalu', 'bass', 'jar', 'nahitar', 'jovar', 'fir', 'kaam', 'paratDe', 'ho', 'nahi'
+            ],
+            builtins: [
+                'bol', 'vichar'
+            ],
+            operators: [
+                '=', '==', '>', '<', '>=', '<=', '!=', '+', '-', '*', '/'
+            ],
+            symbols: /[=><!~?:&|+\-*\/\^%]+/,
+            tokenizer: {
+                root: [
+                    [/[a-zA-Z_]\w*/, {
+                        cases: {
+                            '@keywords': 'keyword',
+                            '@builtins': 'predefined',
+                            '@default': 'identifier'
+                        }
+                    }],
+                    [/\d+/, 'number'],
+                    [/"([^"\\]|\\.)*"/, 'string'],
+                    [/'([^'\\]|\\.)*'/, 'string'],
+                    [/@symbols/, {
+                        cases: {
+                            '@operators': 'operator',
+                            '@default': ''
+                        }
+                    }],
+                    [/#.*$/, 'comment'],
+                ]
             }
         });
-    }
 
-    // 5. Register Autocomplete Suggestions
-    monaco.languages.registerCompletionItemProvider('mlang', {
-        provideCompletionItems: function (model, position) {
-            const suggestions = [
-                {
-                    label: 'chalu',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'chalu',
-                    documentation: 'प्रोग्राम सुरू करतो (Starts code block)'
-                },
-                {
-                    label: 'bass',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'bass',
-                    documentation: 'प्रोग्राम किंवा ब्लॉक संपवतो (Closes scope)'
-                },
-                {
-                    label: 'bol',
-                    kind: monaco.languages.CompletionItemKind.Function,
-                    insertText: 'bol("${1:text}")',
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    documentation: 'माहिती स्क्रीनवर दाखवतो (Outputs variables/strings)'
-                },
-                {
-                    label: 'vichar',
-                    kind: monaco.languages.CompletionItemKind.Function,
-                    insertText: 'vichar("${1:prompt}")',
-                    insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                    documentation: 'वापरकर्त्याला प्रश्न विचारतो (Prompts for terminal input)'
-                },
-                {
-                    label: 'jar',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'jar ',
-                    documentation: 'अट तपासतो (Conditional evaluation)'
-                },
-                {
-                    label: 'nahitar',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'nahitar',
-                    documentation: 'पर्यायी मार्ग निवडतो (Fallback branch)'
-                },
-                {
-                    label: 'jovar',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'jovar ',
-                    documentation: 'लूप चालवतो (While loop block)'
-                },
-                {
-                    label: 'fir',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'fir ',
-                    documentation: 'क्रमवार लूप फिरवतो (For loop iteration)'
-                },
-                {
-                    label: 'kaam',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'kaam ',
-                    documentation: 'नवीन फंक्शन तयार करतो (Defines a function)'
-                },
-                {
-                    label: 'paratDe',
-                    kind: monaco.languages.CompletionItemKind.Keyword,
-                    insertText: 'paratDe ',
-                    documentation: 'किंमत परत देतो (Returns a value from function)'
-                }
-            ];
-            return { suggestions: suggestions };
-        }
+        monaco.editor.defineTheme('mlangDarkTheme', {
+            base: 'vs-dark',
+            inherit: true,
+            rules: [
+                { token: 'keyword', foreground: 'c084fc', fontStyle: 'bold' },
+                { token: 'predefined', foreground: '60a5fa', fontStyle: 'italic' },
+                { token: 'string', foreground: '34d399' },
+                { token: 'number', foreground: 'fb7185' },
+                { token: 'comment', foreground: '6b7280' },
+                { token: 'operator', foreground: 'f472b6' }
+            ],
+            colors: {
+                'editor.background': '#0f172a',
+                'editor.lineHighlightBackground': '#1e293b',
+            }
+        });
+
+        editor = monaco.editor.create(document.getElementById('editor-container'), {
+            value: defaultCodeValue,
+            language: 'mlang',
+            theme: 'mlangDarkTheme',
+            fontSize: 14,
+            fontFamily: "'JetBrains Mono', monospace",
+            automaticLayout: true,
+            minimap: { enabled: false },
+            lineNumbersMinChars: 3
+        });
+
+        // Register Autocomplete Suggestions in Monaco
+        monaco.languages.registerCompletionItemProvider('mlang', {
+            provideCompletionItems: function (model, position) {
+                const suggestions = [
+                    {
+                        label: 'chalu',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'chalu',
+                        documentation: 'प्रोग्राम सुरू करतो (Starts code block)'
+                    },
+                    {
+                        label: 'bass',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'bass',
+                        documentation: 'प्रोग्राम किंवा ब्लॉक संपवतो (Closes scope)'
+                    },
+                    {
+                        label: 'bol',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText: 'bol("${1:text}")',
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'माहिती स्क्रीनवर दाखवतो (Outputs variables/strings)'
+                    },
+                    {
+                        label: 'vichar',
+                        kind: monaco.languages.CompletionItemKind.Function,
+                        insertText: 'vichar("${1:prompt}")',
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                        documentation: 'वापरकर्त्याला प्रश्न विचारतो (Prompts for terminal input)'
+                    },
+                    {
+                        label: 'jar',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'jar ',
+                        documentation: 'अट तपासतो (Conditional evaluation)'
+                    },
+                    {
+                        label: 'nahitar',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'nahitar',
+                        documentation: 'पर्यायी मार्ग निवडतो (Fallback branch)'
+                    },
+                    {
+                        label: 'jovar',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'jovar ',
+                        documentation: 'लूप चालवतो (While loop block)'
+                    },
+                    {
+                        label: 'fir',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'fir ',
+                        documentation: 'क्रमवार लूप फिरवतो (For loop iteration)'
+                    },
+                    {
+                        label: 'kaam',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'kaam ',
+                        documentation: 'नवीन फंक्शन तयार करतो (Defines a function)'
+                    },
+                    {
+                        label: 'paratDe',
+                        kind: monaco.languages.CompletionItemKind.Keyword,
+                        insertText: 'paratDe ',
+                        documentation: 'किंमत परत देतो (Returns a value from function)'
+                    }
+                ];
+                return { suggestions: suggestions };
+            }
+        });
     });
-
-});
+}
 
 // Helper functions to get and set code
 function getCodeValue() {
+    if (isMobile && codeMirrorInstance) {
+        return codeMirrorInstance.getValue();
+    }
     return editor ? editor.getValue() : defaultCodeValue;
 }
 
 function setCodeValue(val) {
-    if (editor) {
+    if (isMobile && codeMirrorInstance) {
+        codeMirrorInstance.setValue(val);
+    } else if (editor) {
         editor.setValue(val);
     }
 }
