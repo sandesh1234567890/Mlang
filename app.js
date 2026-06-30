@@ -281,6 +281,10 @@ function transpileToJS(code) {
         // jar <cond> -> if (<cond>)
         if (protectedLine.startsWith('jar ')) {
             let cond = protectedLine.substring(4).trim();
+            // Automatically correct single "=" to "==" for comparison safety
+            if (cond.includes('=') && !cond.includes('==') && !cond.includes('>=') && !cond.includes('<=') && !cond.includes('!=')) {
+                cond = cond.replace('=', '==');
+            }
             protectedLine = `if (${cond})`;
         }
         // nahitar -> else
@@ -290,6 +294,10 @@ function transpileToJS(code) {
         // jovar <cond> -> while (<cond>)
         else if (protectedLine.startsWith('jovar ')) {
             let cond = protectedLine.substring(6).trim();
+            // Automatically correct single "=" to "==" for comparison safety
+            if (cond.includes('=') && !cond.includes('==') && !cond.includes('>=') && !cond.includes('<=') && !cond.includes('!=')) {
+                cond = cond.replace('=', '==');
+            }
             protectedLine = `while (${cond})`;
         }
         // fir <loop> -> for (<loop>)
