@@ -655,14 +655,7 @@ body {
         flex: none;
     }
     
-    /* Swap Monaco Editor for Mobile-friendly native Textarea */
-    #editor-container {
-        display: none !important;
-    }
-
-    .mobile-textarea-editor {
-        display: block !important;
-    }
+    /* Keep Monaco Editor on mobile viewports for syntax highlighting */
 
     /* Make Modal Paddings and Layout compact */
     .modal-header-row {

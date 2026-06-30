@@ -1,9 +1,7 @@
 // Monaco Editor Integration & Custom MLang Language Definition
 let editor;
-const mobileTextarea = document.getElementById('editor-textarea');
-
-// Synchronize default code template to mobile editor initially
-mobileTextarea.value = `chalu\nnav = vichar("Tujha nav kay? ")\n\njar nav == "Sandesh"\n    bol("Kai bhava!")\nnahitar\n    bol("Swagat ahe!")\nbass`;
+// Default template code
+const defaultCodeValue = `chalu\nnav = vichar("Tujha nav kay? ")\n\njar nav == "Sandesh"\n    bol("Kai bhava!")\nnahitar\n    bol("Swagat ahe!")\nbass`;
 
 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.39.0/min/vs' } });
 
@@ -70,15 +68,20 @@ require(['vs/editor/editor.main'], function () {
     });
 
     // 4. Create Editor Instance
+    const isMobile = window.innerWidth <= 768;
     editor = monaco.editor.create(document.getElementById('editor-container'), {
-        value: mobileTextarea.value,
+        value: defaultCodeValue,
         language: 'mlang',
         theme: 'mlangDarkTheme',
         fontSize: 14,
         fontFamily: "'JetBrains Mono', monospace",
         automaticLayout: true,
         minimap: { enabled: false },
-        lineNumbersMinChars: 3
+        lineNumbersMinChars: 3,
+        // Mobile keyboard friendly overrides:
+        accessibilitySupport: isMobile ? 'off' : 'on',
+        quickSuggestions: !isMobile,
+        wordWrap: 'on'
     });
 
     // 5. Register Autocomplete Suggestions
@@ -152,29 +155,14 @@ require(['vs/editor/editor.main'], function () {
         }
     });
 
-    // Synchronize changes from Monaco to mobile textarea (just in case screen rotates/resizes)
-    editor.onDidChangeModelContent(() => {
-        mobileTextarea.value = editor.getValue();
-    });
 });
 
-// Sync changes from mobile textarea to Monaco
-mobileTextarea.addEventListener('input', () => {
-    if (editor) {
-        editor.setValue(mobileTextarea.value);
-    }
-});
-
-// Helper functions to get and set code regardless of screen size
+// Helper functions to get and set code
 function getCodeValue() {
-    if (window.innerWidth <= 768) {
-        return mobileTextarea.value;
-    }
-    return editor ? editor.getValue() : mobileTextarea.value;
+    return editor ? editor.getValue() : defaultCodeValue;
 }
 
 function setCodeValue(val) {
-    mobileTextarea.value = val;
     if (editor) {
         editor.setValue(val);
     }
